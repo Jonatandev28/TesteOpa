@@ -13,7 +13,7 @@ import useAuth from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { api } from "@/service/api";
 
-const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3333");
+const socket = io("http://localhost:" + process.env.NEXT_PUBLIC_API_PORT);
 
 const Chat = () => {
   const { data } = useAuth();
