@@ -1,5 +1,6 @@
 import Message from "../models/messageModel";
 import User from "../models/userModel";
+import mongoose, { Schema, Document } from "mongoose";
 
 export const addUser = async (userData: {
   name: string;
@@ -21,33 +22,6 @@ export const addUser = async (userData: {
       throw new Error("Email ja cadastrado");
     }
     throw new Error("Erro ao adicionar usuário");
-  }
-};
-
-export const getUsers = async (email: string) => {
-  try {
-    const users = await User.find().select("_id name photo status email");
-
-    const formatUser = await Promise.all(
-      users.map(async (u) => {
-        const lastMessage = await Message.findOne({ receiver: u._id })
-          .sort({ timestamp: -1 })
-          .select("content");
-
-        return {
-          id: u._id,
-          title: lastMessage ? lastMessage.content : "Nenhuma mensagem",
-          email: u.email,
-          name: u.name,
-          photo: u.photo,
-          status: u.status,
-        };
-      })
-    );
-
-    return formatUser;
-  } catch (error: any) {
-    throw new Error("Erro ao obter usuários: " + error.message);
   }
 };
 

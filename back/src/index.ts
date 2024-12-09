@@ -4,7 +4,6 @@ import passport from "passport";
 import session from "express-session";
 import connectDB from "./config/database";
 import authRoutes from "./routes/authRoutes";
-import userRoutes from "./routes/userRoutes";
 import { configurePassport } from "./config/passportConfig";
 import http from "http";
 import { Server } from "socket.io";
@@ -49,7 +48,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/api/auth", authRoutes);
-app.use("/api", userRoutes);
 
 const server = http.createServer(app);
 

@@ -22,26 +22,21 @@ const Sidebar = ({ setSiderBarItemSelected, siderBarItemSelected, newMessages, s
   const [client, setClient] = useState<boolean>(false);
 
 
-  const updateUserStatus = (data: SidebarItemTypes) => {
-    setDataSideBar((prevData) => {
-      const userIndex = prevData.findIndex((user) => user.email === data.email);
+  const updateUserStatus = (dataSocket: SidebarItemTypes) => {
+    const idSocket = dataSocket.id;
+    const idLogged = data?.id
 
-      if (userIndex !== -1) {
-        const updatedData = [...prevData];
-        updatedData[userIndex] = { ...updatedData[userIndex], status: data.status };
-        toast.success(`${updatedData[userIndex].name} acabou de ${data.status === "online" ? "entrar" : "sair"}`);
-        return updatedData;
-      } else {
-        return [...prevData, data];
-      }
-    });
+    setDataSideBar((prev) => prev.map((item) => (item.id === idSocket ? { ...item, status: dataSocket.status } : item)));
+    if (idSocket !== idLogged) {
+      toast(`${dataSocket.name} acabou de ${dataSocket.status === "online" ? "entrar" : "sair"}`);
+    }
   };
 
   useEffect(() => {
     setClient(true);
 
-    socket.on("userStatusChange", (data) => {
-      updateUserStatus(data);
+    socket.on("userStatusChange", (dataSocket) => {
+      updateUserStatus(dataSocket);
     });
 
     return () => {
@@ -52,10 +47,8 @@ const Sidebar = ({ setSiderBarItemSelected, siderBarItemSelected, newMessages, s
   const handleClick = (item: SidebarItemTypes) => {
     setSiderBarItemSelected((prev) => (prev?.id === item.id ? null : item));
 
-    // Filtrar as mensagens para manter apenas as que NÃO possuem o sender igual ao item.id
     const updatedMessages = newMessages.filter((message) => message.sender !== item.id);
 
-    // Atualize o estado ou faça algo com `updatedMessages` caso necessário
     setNewMessages(updatedMessages);
   };
 

@@ -5,6 +5,7 @@ interface IMessage extends Document {
   receiver: mongoose.Schema.Types.ObjectId;
   content: string;
   timestamp: Date;
+  isRead: boolean;
 }
 
 const messageSchema: Schema<IMessage> = new Schema({
@@ -20,6 +21,7 @@ const messageSchema: Schema<IMessage> = new Schema({
   },
   content: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
+  isRead: { type: Boolean, default: false },
 });
 
 const Message = mongoose.model<IMessage>("Message", messageSchema);

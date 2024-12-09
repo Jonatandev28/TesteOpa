@@ -11,7 +11,6 @@ import InputSend from "./InputSend";
 import { Card, CardContent } from "@/components/ui/card";
 import useAuth from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { api } from "@/service/api";
 
 const socket = io("http://localhost:" + process.env.NEXT_PUBLIC_API_PORT);
 
@@ -23,21 +22,27 @@ const Chat = () => {
   const [newMessages, setNewMessages] = useState<MessageTypes[]>([]);
   const [dataSideBar, setDataSideBar] = useState<SidebarItemTypes[]>([]);
 
-  const getDataSideBar = async () => {
-    try {
-      const res = await api.get("/users");
-      setDataSideBar(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  useEffect(() => {
+    socket.emit("getUsers");
 
-  // Emit "join" event when user is authenticated (with their id)
+    socket.on("usersList", (usersList) => {
+      setDataSideBar(usersList);
+    });
+
+    socket.on("usersUpdated", (updatedUsers) => {
+      setDataSideBar(updatedUsers);
+    });
+
+    return () => {
+      socket.off("usersList");
+      socket.off("usersUpdated");
+    };
+  }, [data]);
+
   useEffect(() => {
     if (data?.id) {
       socket.emit("join", data.id);
     }
-    getDataSideBar();
   }, [data]);
 
 
